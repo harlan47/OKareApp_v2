@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "450532025948",
+    "firebase_url": "https://tku-okare-iot-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "tku-okare-iot",
+    "storage_bucket": "tku-okare-iot.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:450532025948:android:04d4031b9f8aeb9ddc6899",
+        "android_client_info": {
+          "package_name": "com.example.okareappv2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "450532025948-e43arokc9dcd8bj75j63ui6uhltemp65.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhsESUVj3nZFVM_JgBKBAfIzSBrl4Znbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "450532025948-e43arokc9dcd8bj75j63ui6uhltemp65.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:450532025948:android:f5f69dcb56f28bbbdc6899",
+        "android_client_info": {
+          "package_name": "com.example.okarepro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "450532025948-e43arokc9dcd8bj75j63ui6uhltemp65.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhsESUVj3nZFVM_JgBKBAfIzSBrl4Znbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "450532025948-e43arokc9dcd8bj75j63ui6uhltemp65.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

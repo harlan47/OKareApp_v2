@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:background="#00000000">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/info_image_button1"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:layout_marginTop="20dp"
+
+        android:background="@drawable/info_card"
+
+        android:paddingHorizontal="50dp"
+
+
+        >
+
+        <ImageView
+            android:id="@+id/food_img"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:src="@drawable/ic_food_80"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            app:layout_constraintLeft_toRightOf="@id/food_img"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="飲食搭配"
+            android:textSize="45sp"
+            android:gravity="center"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/info_image_button2"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+
+        android:layout_marginTop="16dp"
+
+        android:background="@drawable/info_card"
+
+        android:paddingHorizontal="50dp">
+
+        <ImageView
+            android:id="@+id/virus_img"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:src="@drawable/ic_virus_80"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            app:layout_constraintLeft_toRightOf="@id/virus_img"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="新冠肺炎"
+            android:textSize="45sp"
+            android:gravity="center"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/info_image_button3"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+
+        android:layout_marginTop="16dp"
+
+        android:background="@drawable/info_card"
+
+        android:paddingHorizontal="50dp"
+        >
+
+        <ImageView
+            android:id="@+id/mental_health_img"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:src="@drawable/ic_mental_health_80"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            app:layout_constraintLeft_toRightOf="@id/mental_health_img"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="心理健康"
+            android:textSize="45sp"
+            android:gravity="center"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/info_image_button4"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp"
+
+        android:background="@drawable/info_card"
+        android:paddingHorizontal="50dp"
+        >
+
+        <ImageView
+            android:id="@+id/fall_handle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:src="@drawable/ic_fall_80"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            app:layout_constraintLeft_toRightOf="@id/fall_handle"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="跌倒處理"
+            android:textSize="45sp"
+            android:gravity="center"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

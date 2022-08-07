@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTENT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/okareappicon"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/okareappicon_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.OKareAppV2"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".Login.SignUpActivity"
+            android:exported="false" />
+
+        <service
+            android:name=".familyUI.ArduinoService"
+            android:enabled="true" />
+
+        <activity
+            android:name=".familyUI.FamilyMainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Login.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ElderUI.ElderMainActivity"
+            android:screenOrientation="portrait" />
+    </application>
+
+</manifest>
