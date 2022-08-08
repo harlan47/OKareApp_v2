@@ -30,10 +30,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
             android:text="OKare"
             android:textSize="30sp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:text="緊急聯絡人"
+            android:textSize="24sp" />
 
         <EditText
             android:id="@+id/login_account"

@@ -28,9 +28,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     Button registerButton, loginButton;
     EditText accountEditText, passwordEditText;
+    RequestQueue queue;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    String account_username, account_password;
+    String account_username, product_key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onStart() {
         super.onStart();
-        if (sharedPreferences.getString("username", null) != null){
+        if (account_username != null && product_key != null){
             Intent intent = new Intent(this, FamilyMainActivity.class);
             startActivity(intent);
             finish();
@@ -56,10 +57,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginButton = findViewById(R.id.login_button);
         accountEditText = findViewById(R.id.login_account);
         passwordEditText = findViewById(R.id.login_password);
+        queue = Volley.newRequestQueue(LoginActivity.this);
         sharedPreferences = getSharedPreferences("setting", MODE_PRIVATE);
         editor = sharedPreferences.edit();
         account_username = sharedPreferences.getString("username", null);
-        account_password = sharedPreferences.getString("password", null);
+        product_key = sharedPreferences.getString("product_key", null);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -72,32 +74,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 finish();
                 break;
             case R.id.login_button:
-                postData(accountEditText.getText().toString(), passwordEditText.getText().toString());
+                if (accountEditText.getText().toString().isEmpty() || passwordEditText.getText().toString().isEmpty()){
+                    Toast.makeText(LoginActivity.this, "帳號名稱或密碼不得為空白。", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                postLoginData(accountEditText.getText().toString(), passwordEditText.getText().toString());
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + v.getId());
         }
     }
 
-    private void postData(String un, String pw){
+    private void postLoginData(String un, String pw){
         String url = "https://okareproserver.lionfree.net/api/v1.0.0/login.php";
-        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response -> {
             try {
                 JSONObject respObj = new JSONObject(response);
+                int resp = respObj.getInt("response");
                 String msg = respObj.getString("msg");
-
-                if (msg.equals("登入成功")){
-                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                if (resp == 100){
                     editor.putString("username", un);
                     editor.commit();
-                    Intent intent2 = new Intent(this, FamilyMainActivity.class);
-                    startActivity(intent2);
-                    finish();
-                }
-                else {
-                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    getProductKey(un);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -108,6 +108,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Map<String, String> params = new HashMap<>();
                 params.put("username", un);
                 params.put("password", pw);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
+    private void getProductKey(String un){
+        String url = "https://okareproserver.lionfree.net/api/v1.0.0/getUserProductKey.php";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response -> {
+            try {
+                JSONObject respObj = new JSONObject(response);
+                int resp = respObj.getInt("response");
+                String msg = respObj.getString("msg");
+                if (resp == 100){
+                    editor.putString("product_key", msg);
+                    editor.commit();
+                    Intent intent2 = new Intent(this, FamilyMainActivity.class);
+                    startActivity(intent2);
+                    finish();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }, error -> Toast.makeText(LoginActivity.this, "Fail to post data = " + error, Toast.LENGTH_SHORT).show()) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("username", un);
                 return params;
             }
         };

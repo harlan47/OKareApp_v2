@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 public class SignUpActivity extends AppCompatActivity {
     EditText nameEdt, passwordEdt, product_keyEdt;
-    Button register;
+    Button register, back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +37,15 @@ public class SignUpActivity extends AppCompatActivity {
         passwordEdt = findViewById(R.id.register_password);
         product_keyEdt = findViewById(R.id.product_key);
         register = findViewById(R.id.register_button);
+        back = findViewById(R.id.back_button);
     }
 
     private void setOnClickListener(){
+        back.setOnClickListener(v -> {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        });
         register.setOnClickListener(v -> {
             if (nameEdt.getText().toString().isEmpty() || passwordEdt.getText().toString().isEmpty() || product_keyEdt.getText().toString().isEmpty()){
                 Toast.makeText(SignUpActivity.this, "註冊資料有缺漏", Toast.LENGTH_SHORT).show();
@@ -50,23 +56,20 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private void postData(String n, String pw, String pk){
+    private void postData(String un, String pw, String pk){
         String url = "https://okareproserver.lionfree.net/api/v1.0.0/signUp.php";
         RequestQueue queue = Volley.newRequestQueue(SignUpActivity.this);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response -> {
             try {
                 JSONObject respObj = new JSONObject(response);
+                int resp = respObj.getInt("response");
                 String msg = respObj.getString("msg");
-
-                if (msg.equals("產品註冊成功")){
-                    Toast.makeText(SignUpActivity.this, msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpActivity.this, msg, Toast.LENGTH_SHORT).show();
+                if (resp == 100){
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
                     finish();
-                }
-                else {
-                    Toast.makeText(SignUpActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -75,7 +78,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("username", n);
+                params.put("username", un);
                 params.put("password", pw);
                 params.put("product_key", pk);
                 return params;
