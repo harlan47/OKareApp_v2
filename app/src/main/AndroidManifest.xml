@@ -15,18 +15,7 @@
         android:theme="@style/Theme.OKareAppV2"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".Login.SignUpActivity"
-            android:exported="false" />
 
-        <service
-            android:name=".familyUI.ArduinoService"
-            android:enabled="true" />
-
-        <activity
-            android:name=".familyUI.FamilyMainActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".Login.LoginActivity"
             android:exported="true"
@@ -37,9 +26,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Login.SignUpActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".familyUI.FamilyMainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".ElderUI.ElderMainActivity"
             android:screenOrientation="portrait" />
+
+        <service
+            android:name=".familyUI.ArduinoService"
+            android:enabled="true" />
+
     </application>
 
 </manifest>

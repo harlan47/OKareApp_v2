@@ -10,13 +10,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.okareappv2.Login.LoginActivity;
+import com.example.okareappv2.familyUI.ArduinoService;
 
 public class LogoutButton {
     TextView textView;
     Activity activity;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    String username, product_key;
+    String username;
 
     public LogoutButton(){
 
@@ -28,11 +29,10 @@ public class LogoutButton {
         sharedPreferences = activity.getSharedPreferences("setting", MODE_PRIVATE);
         editor = sharedPreferences.edit();
         username = sharedPreferences.getString("username", null);
-        product_key = sharedPreferences.getString("product_key", null);
 
         textView.setOnClickListener(v -> new AlertDialog.Builder(v.getContext())
                 .setTitle("確定要登出？")
-                .setMessage("登出將清除基本資料。\n帳戶名稱："+username+"\n產品金鑰："+product_key)
+                .setMessage("登出將清除基本資料。\n帳戶名稱："+username)
                 .setNegativeButton("取消", (dialog, which) -> {
 
                 })

@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.okareappv2.R;
@@ -102,7 +104,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }, error -> Toast.makeText(LoginActivity.this, "Fail to post data = " + error, Toast.LENGTH_SHORT).show()) {
+        }, error -> Toast.makeText(LoginActivity.this, "Fail to post data of username and password = " + error, Toast.LENGTH_LONG).show()) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -132,7 +134,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }, error -> Toast.makeText(LoginActivity.this, "Fail to post data = " + error, Toast.LENGTH_SHORT).show()) {
+        }, error -> Toast.makeText(LoginActivity.this, "Fail to post data of product_key = " + error, Toast.LENGTH_SHORT).show()) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();

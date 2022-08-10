@@ -23,25 +23,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.okareappv2.Login.LoginActivity;
 import com.example.okareappv2.LogoutButton;
 import com.example.okareappv2.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -53,13 +51,15 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
     DrawerLayout drawerLayout;
     EditText ip;
     LogoutButton logoutButton;
-    ImageView imageView, webview;
-    TextView temperature, humidity, signal_time, signal_result, title, username, product_key;
+    ImageView imageView, camera_picture;
+    TextView temperature, humidity, signal_time, signal_result, title, username;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     Switch notification, thermometer;
 //    WebView webview;
     WebSettings webSettings;
+    RequestQueue queue;
+    Intent intent_service;
     myReceiver myreceiver;
     String uName, pKey;
     boolean setting_notification, setting_thermometer;
@@ -88,17 +88,23 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
 
     public void onStart(){
         super.onStart();
-        getUserImage();
-        if (setting_thermometer)
-            startArduinoService();
+        if (setting_thermometer){
+            startService(intent_service);
+            myreceiver = new myReceiver();
+            IntentFilter filter = new IntentFilter("fromService");
+            registerReceiver(myreceiver,filter);
+        }
     }
 
     public void onStop() {
         super.onStop();
-        if (setting_thermometer)
-            this.unregisterReceiver(myreceiver);
+        if (setting_thermometer){
+            unregisterReceiver(myreceiver);
+            stopService(intent_service);
+        }
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -119,14 +125,15 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
         signal_time = findViewById(R.id.signal_time);
         signal_result = findViewById(R.id.signal_result);
         username = findViewById(R.id.account_name);
-        product_key = findViewById(R.id.product_key);
         notification = findViewById(R.id.notification);
         thermometer = findViewById(R.id.thermometer);
-        webview = findViewById(R.id.webcam_view);
+        camera_picture = findViewById(R.id.camera_view);
         ip = findViewById(R.id.ipaddress);
         title = findViewById(R.id.okare_title);
         sharedPreferences = getSharedPreferences("setting", MODE_PRIVATE);
         editor = sharedPreferences.edit();
+        intent_service = new Intent(FamilyMainActivity.this, ArduinoService.class);
+        queue = Volley.newRequestQueue(FamilyMainActivity.this);
     }
 
     private void initSetting(){
@@ -136,7 +143,6 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
         pKey = sharedPreferences.getString("product_key", null);
 
         username.setText(uName);
-        product_key.setText(pKey);
         notification.setChecked(setting_notification);
         thermometer.setChecked(setting_thermometer);
         if(!setting_thermometer){
@@ -213,7 +219,7 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
         String date_time = formatter.format(new Date(System.currentTimeMillis()));
 
         //接收Firebase資料
-        ElderSignal serverSignal = new ElderSignal("RQJO-TOAZ-OKLT-VJTM/server_side");
+        ElderSignal serverSignal = new ElderSignal(pKey+"/server_side");
         serverSignal.reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -268,8 +274,7 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         //接收Firebase資料
-        ElderSignal elderSignal = new ElderSignal("RQJO-TOAZ-OKLT-VJTM/older_side");
-//        elderSignal.reference.child("sos").setValue(false);
+        ElderSignal elderSignal = new ElderSignal(pKey+"/older_side");
         elderSignal.reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -295,37 +300,68 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
     private class myReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String result=intent.getStringExtra("result");
-            String result1=intent.getStringExtra("result1");
-            temperature.setText(result);
-            temperature.append("℃");
-            humidity.setText(result1);
-            humidity.append("%");
+            String result = intent.getStringExtra("result");
+            String result1 = intent.getStringExtra("result1");
+            String result2 = intent.getStringExtra("result2");
+            if (result == null || result1 == null){
+                getArduinoData();
+            }
+            else {
+                temperature.setText(result);
+                temperature.append("℃");
+                humidity.setText(result1);
+                humidity.append("%");
+            }
+
+            if (result2 == null){
+                getUserImage();
+            }
+            else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    try {
+                        byte[] bytes = Base64.getDecoder().decode(result2);
+                        Bitmap bitmap= BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                        camera_picture.setImageBitmap(bitmap);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 
-    //啟動ArduinoService
-    public void startArduinoService(){
-        Intent intent = new Intent();
-        intent.setClass(FamilyMainActivity.this, ArduinoService.class);
-        startService(intent);
-        myreceiver=new myReceiver();
-        IntentFilter filter=new IntentFilter("fromService");
-        registerReceiver(myreceiver,filter);
+    public void getArduinoData(){
+        String url_arduino = "http://api.thingspeak.com/channels/1679756/feeds/last.json?api_key=CLPA3ECDNZAYXERC&timezone=Asia/Taipei";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url_arduino, response -> {
+            try {
+                JSONObject json=new JSONObject(response);
+                String result_tem = json.getString("field1");
+                String result_hum = json.getString("field2");
+                temperature.setText(result_tem);
+                temperature.append("℃");
+                humidity.setText(result_hum);
+                humidity.append("%");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        },error -> Toast.makeText(FamilyMainActivity.this, "Fail to get data of Arduino = " + error, Toast.LENGTH_SHORT).show());
+        queue.add(stringRequest);
     }
 
     public void getUserImage(){
         String url = "https://okareproserver.lionfree.net/api/v1.0.0/getUserImage.php";
-        RequestQueue queue = Volley.newRequestQueue(FamilyMainActivity.this);
-
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                byte[] bytes = Base64.getDecoder().decode(response);
-                Bitmap bitmap= BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                webview.setImageBitmap(bitmap);
+                try {
+                    byte[] bytes = Base64.getDecoder().decode(response);
+                    Bitmap bitmap= BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                    camera_picture.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        }, error -> Toast.makeText(FamilyMainActivity.this, "Fail to post data = " + error, Toast.LENGTH_SHORT).show()) {
-            @Nullable
+        }, error -> Toast.makeText(FamilyMainActivity.this, "Fail to post data of image in main = " + error, Toast.LENGTH_SHORT).show()) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();

@@ -52,7 +52,6 @@ public class SignUpActivity extends AppCompatActivity {
                 return;
             }
             postData(nameEdt.getText().toString(), passwordEdt.getText().toString(), product_keyEdt.getText().toString());
-
         });
     }
 
@@ -74,7 +73,7 @@ public class SignUpActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }, error -> Toast.makeText(SignUpActivity.this, "Fail to post data = " + error, Toast.LENGTH_SHORT).show()) {
+        }, error -> Toast.makeText(SignUpActivity.this, "Fail to post data of three items = " + error, Toast.LENGTH_SHORT).show()) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
