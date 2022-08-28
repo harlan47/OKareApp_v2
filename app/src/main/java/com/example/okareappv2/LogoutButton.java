@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.okareappv2.Login.LoginActivity;
-import com.example.okareappv2.familyUI.ArduinoService;
 
 public class LogoutButton {
     TextView textView;

@@ -26,24 +26,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Login.SignUpActivity"
             android:exported="false" />
-
         <activity
             android:name=".familyUI.FamilyMainActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ElderUI.ElderMainActivity"
             android:screenOrientation="portrait" />
 
         <service
-            android:name=".familyUI.ArduinoService"
+            android:name=".familyUI.CameraService"
             android:enabled="true" />
-
+        <service
+            android:name=".familyUI.ArduinoService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>

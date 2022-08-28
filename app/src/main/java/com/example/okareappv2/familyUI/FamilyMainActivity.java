@@ -1,7 +1,6 @@
 package com.example.okareappv2.familyUI;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -22,7 +21,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -57,10 +55,11 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
     SharedPreferences.Editor editor;
     Switch notification, thermometer;
 //    WebView webview;
-    WebSettings webSettings;
+//    WebSettings webSettings;
     RequestQueue queue;
-    Intent intent_service;
-    myReceiver myreceiver;
+    Intent intent_CameraService, intent_ArduinoService;
+    CameraReceiver cameraReceiver;
+    ArduinoReceiver arduinoReceiver;
     String uName, pKey;
     boolean setting_notification, setting_thermometer;
     private int isShow = 0;
@@ -88,19 +87,27 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
 
     public void onStart(){
         super.onStart();
+        startService(intent_CameraService);
+        cameraReceiver = new CameraReceiver();
+        IntentFilter filter_camera = new IntentFilter("fromCameraService");
+        registerReceiver(cameraReceiver,filter_camera);
+
         if (setting_thermometer){
-            startService(intent_service);
-            myreceiver = new myReceiver();
-            IntentFilter filter = new IntentFilter("fromService");
-            registerReceiver(myreceiver,filter);
+            startService(intent_ArduinoService);
+            arduinoReceiver = new ArduinoReceiver();
+            IntentFilter filter_arduino = new IntentFilter("fromArduinoService");
+            registerReceiver(arduinoReceiver,filter_arduino);
         }
     }
 
     public void onStop() {
         super.onStop();
+        unregisterReceiver(cameraReceiver);
+        stopService(intent_CameraService);
+
         if (setting_thermometer){
-            unregisterReceiver(myreceiver);
-            stopService(intent_service);
+            unregisterReceiver(arduinoReceiver);
+            stopService(intent_ArduinoService);
         }
     }
 
@@ -132,7 +139,8 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
         title = findViewById(R.id.okare_title);
         sharedPreferences = getSharedPreferences("setting", MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        intent_service = new Intent(FamilyMainActivity.this, ArduinoService.class);
+        intent_CameraService = new Intent(FamilyMainActivity.this, CameraService.class);
+        intent_ArduinoService = new Intent(FamilyMainActivity.this, ArduinoService.class);
         queue = Volley.newRequestQueue(FamilyMainActivity.this);
     }
 
@@ -179,14 +187,22 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
         });
         thermometer.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked){
+                startService(intent_ArduinoService);
+                arduinoReceiver = new ArduinoReceiver();
+                IntentFilter filter_arduino = new IntentFilter("fromArduinoService");
+                registerReceiver(arduinoReceiver,filter_arduino);
+                Toast.makeText(FamilyMainActivity.this, "室內溫溼度監控已開啟", Toast.LENGTH_SHORT).show();
                 editor.putBoolean("thermometer",true);
                 editor.commit();
-                Toast.makeText(FamilyMainActivity.this, "室內溫溼度監控已開啟。需重啟", Toast.LENGTH_SHORT).show();
             }
             else{
+                unregisterReceiver(arduinoReceiver);
+                stopService(intent_ArduinoService);
+                temperature.setText("停用");
+                humidity.setText("停用");
+                Toast.makeText(FamilyMainActivity.this, "室內溫溼度監控已關閉", Toast.LENGTH_SHORT).show();
                 editor.putBoolean("thermometer",false);
                 editor.commit();
-                Toast.makeText(FamilyMainActivity.this, "室內溫溼度監控已關閉。需重啟", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -296,30 +312,19 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-    //接收ArduinoService以Intent傳送的資料
-    private class myReceiver extends BroadcastReceiver {
+    //接收CameraService以Intent傳送的資料
+    private class CameraReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String result = intent.getStringExtra("result");
-            String result1 = intent.getStringExtra("result1");
-            String result2 = intent.getStringExtra("result2");
-            if (result == null || result1 == null){
-                getArduinoData();
-            }
-            else {
-                temperature.setText(result);
-                temperature.append("℃");
-                humidity.setText(result1);
-                humidity.append("%");
-            }
+            String result_image = intent.getStringExtra("result_image");
 
-            if (result2 == null){
+            if (result_image == null){
                 getUserImage();
             }
             else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     try {
-                        byte[] bytes = Base64.getDecoder().decode(result2);
+                        byte[] bytes = Base64.getDecoder().decode(result_image);
                         Bitmap bitmap= BitmapFactory.decodeByteArray(bytes,0,bytes.length);
                         camera_picture.setImageBitmap(bitmap);
                     }
@@ -327,6 +332,25 @@ public class FamilyMainActivity extends AppCompatActivity implements View.OnClic
                         e.printStackTrace();
                     }
                 }
+            }
+        }
+    }
+
+    //接收ArduinoService以Intent傳送的資料
+    private class ArduinoReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String result_tem = intent.getStringExtra("result_tem");
+            String result_hum = intent.getStringExtra("result_hum");
+
+            if (result_tem == null || result_hum == null){
+                getArduinoData();
+            }
+            else {
+                temperature.setText(result_tem);
+                temperature.append("℃");
+                humidity.setText(result_hum);
+                humidity.append("%");
             }
         }
     }
